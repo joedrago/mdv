@@ -99,6 +99,8 @@ function closeTab(id) {
         } else {
             activeTabId = null
             document.title = "Markdown Viewer"
+            const sidebar = document.getElementById("toc-sidebar")
+            if (sidebar) sidebar.innerHTML = ""
         }
     }
 
