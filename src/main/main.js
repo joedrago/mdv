@@ -35,6 +35,7 @@ function createWindow() {
         x: state.x,
         y: state.y,
         title: "Markdown Viewer",
+        icon: path.join(__dirname, "..", "..", "assets", "icon.png"),
         webPreferences: {
             preload: path.join(__dirname, "..", "preload", "preload.js"),
             contextIsolation: true,
@@ -52,8 +53,15 @@ function createWindow() {
 
     mainWindow.loadFile(path.join(__dirname, "..", "renderer", "index.html"))
 
-    // Prevent Electron from navigating to dropped files
-    mainWindow.webContents.on("will-navigate", (event) => {
+    // Prevent Electron from navigating away, but allow in-page anchor links
+    mainWindow.webContents.on("will-navigate", (event, url) => {
+        const currentURL = mainWindow.webContents.getURL()
+        const current = new URL(currentURL)
+        const target = new URL(url)
+        // Allow same-page hash navigation
+        if (target.origin === current.origin && target.pathname === current.pathname && target.hash) {
+            return
+        }
         event.preventDefault()
     })
 

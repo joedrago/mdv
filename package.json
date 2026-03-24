@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "main": "src/main/main.js",
     "scripts": {
-        "start": "electron .",
+        "start": "electron . --no-sandbox",
         "format": "prettier -w src/ scripts/",
         "eslint": "eslint src/ scripts/",
         "vendor": "node scripts/copy-vendor.js",

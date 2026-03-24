@@ -35,7 +35,8 @@ module.exports = {
             config: {
                 mimeType: ["text/markdown"],
                 options: {
-                    name: "mdv"
+                    name: "mdv",
+                    icon: path.join(__dirname, "assets", "icon.png")
                 }
             }
         },
