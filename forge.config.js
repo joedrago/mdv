@@ -4,6 +4,7 @@ module.exports = {
     packagerConfig: {
         asar: true,
         name: "Markdown Viewer",
+        executableName: "mdv",
         appBundleId: "com.joedrago.mdv",
         icon: path.join(__dirname, "assets", "icon"),
         extendInfo: {
