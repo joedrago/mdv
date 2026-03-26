@@ -142,3 +142,31 @@ mark.search-highlight.active {
     background: #f0a030;
     outline: 2px solid #d68a1e;
 }
+
+/* Scrollbar match markers */
+#find-scroll-markers {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+#find-scroll-markers.hidden {
+    display: none;
+}
+
+.find-scroll-marker {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    height: 3px;
+    background: #e8a517;
+    border-radius: 1px;
+}
+
+.find-scroll-marker.active {
+    background: #d45500;
+}
