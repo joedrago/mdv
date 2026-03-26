@@ -221,12 +221,31 @@ function performSearch() {
 function navigateMatch(direction) {
     if (matches.length === 0) return
 
-    const newIndex = currentIndex + direction
     const wrap = typeof Settings !== "undefined" && Settings.getWrapNavigation()
-    if (!wrap && (newIndex < 0 || newIndex >= matches.length)) return
+    const cursorPx = typeof Cursor !== "undefined" ? Cursor.getPixel() : null
+
+    // If cursor has moved away from the current match, find relative to cursor
+    let newIndex
+    if (cursorPx !== null && currentIndex >= 0 && Math.abs(matches[currentIndex].offsetTop - cursorPx) > 20) {
+        if (direction > 0) {
+            newIndex = matches.findIndex((m) => m.offsetTop > cursorPx)
+            if (newIndex === -1) newIndex = wrap ? 0 : -1
+        } else {
+            newIndex = -1
+            for (let i = matches.length - 1; i >= 0; i--) {
+                if (matches[i].offsetTop < cursorPx) { newIndex = i; break }
+            }
+            if (newIndex === -1) newIndex = wrap ? matches.length - 1 : -1
+        }
+        if (newIndex === -1) return
+    } else {
+        newIndex = currentIndex + direction
+        if (!wrap && (newIndex < 0 || newIndex >= matches.length)) return
+        newIndex = (newIndex + matches.length) % matches.length
+    }
 
     matches[currentIndex].classList.remove("active")
-    currentIndex = (newIndex + matches.length) % matches.length
+    currentIndex = newIndex
     matches[currentIndex].classList.add("active")
     matches[currentIndex].scrollIntoView({ block: "center", behavior: "smooth" })
     if (typeof Cursor !== "undefined") {
