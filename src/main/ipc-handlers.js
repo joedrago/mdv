@@ -101,4 +101,10 @@ function sendMoveTab(win, direction) {
     }
 }
 
-module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab }
+function sendToggleFind(win) {
+    if (win && !win.isDestroyed()) {
+        win.webContents.send("toggle-find")
+    }
+}
+
+module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind }

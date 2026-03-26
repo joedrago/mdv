@@ -1,5 +1,5 @@
 const { Menu, app } = require("electron")
-const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab } = require("./ipc-handlers")
+const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind } = require("./ipc-handlers")
 const fileManager = require("./file-manager")
 
 const themes = [
@@ -117,7 +117,16 @@ function buildMenu(win) {
         },
         {
             label: "Edit",
-            submenu: [{ role: "copy" }, { role: "selectAll" }]
+            submenu: [
+                { role: "copy" },
+                { role: "selectAll" },
+                { type: "separator" },
+                {
+                    label: "Find...",
+                    accelerator: "CmdOrCtrl+F",
+                    click: () => sendToggleFind(win)
+                }
+            ]
         },
         {
             label: "View",

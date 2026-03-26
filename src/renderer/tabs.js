@@ -73,6 +73,11 @@ function createTab(filePath, title) {
 }
 
 function switchTab(id) {
+    // Clear find highlights from previous tab before switching
+    if (typeof Find !== "undefined") {
+        Find.clearHighlights()
+    }
+
     // Save current scroll from the actual scroll container
     if (activeTabId !== null && !restoringSession) {
         const current = findTab(activeTabId)

@@ -36,5 +36,8 @@ contextBridge.exposeInMainWorld("mdv", {
     },
     onMoveTab: (callback) => {
         ipcRenderer.on("move-tab", (_e, direction) => callback(direction))
+    },
+    onToggleFind: (callback) => {
+        ipcRenderer.on("toggle-find", () => callback())
     }
 })

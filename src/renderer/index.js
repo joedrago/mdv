@@ -67,6 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tab) Tabs.moveTab(tab.id, direction)
     })
 
+    window.mdv.onToggleFind(() => {
+        Find.toggleFind()
+    })
+
     // Empty state click opens file dialog
     document.getElementById("empty-state").addEventListener("click", async () => {
         const filePath = await window.mdv.openFileDialog()
