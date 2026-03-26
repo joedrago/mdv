@@ -1,5 +1,5 @@
 let marginEl = null
-// Pixel threshold for snapping to an existing bookmark when clicking
+// Pixel threshold for snapping to an existing bookmark when clicking/toggling
 const SNAP_PX = 10
 
 function ensureMargin() {
@@ -17,9 +17,8 @@ function ensureMargin() {
         // Convert click to absolute pixel position in the document
         const areaRect = area.getBoundingClientRect()
         const pixelY = e.clientY - areaRect.top + area.scrollTop
-        const ratio = pixelY / area.scrollHeight
 
-        toggleAtPosition(tab, ratio, area)
+        toggleAtPosition(tab, pixelY)
     })
 }
 
@@ -28,24 +27,20 @@ function toggle() {
     if (!tab) return
     if (!tab.bookmarks) tab.bookmarks = loadBookmarks(tab.filePath)
 
-    const area = document.getElementById("content-area")
-    if (!area || area.scrollHeight === 0) return
-    const ratio = typeof Cursor !== "undefined" ? Cursor.getRatio() : area.scrollTop / area.scrollHeight
+    const pixelY = typeof Cursor !== "undefined" ? Cursor.getPixel() : document.getElementById("content-area").scrollTop
 
-    toggleAtPosition(tab, ratio, area)
+    toggleAtPosition(tab, pixelY)
 }
 
-function toggleAtPosition(tab, ratio, area) {
+function toggleAtPosition(tab, pixelY) {
     if (!tab.bookmarks) tab.bookmarks = loadBookmarks(tab.filePath)
 
-    const threshold = SNAP_PX / area.scrollHeight
-
     // Check if near an existing bookmark
-    const existing = tab.bookmarks.findIndex((b) => Math.abs(b - ratio) < threshold)
+    const existing = tab.bookmarks.findIndex((b) => Math.abs(b - pixelY) < SNAP_PX)
     if (existing !== -1) {
         tab.bookmarks.splice(existing, 1)
     } else {
-        tab.bookmarks.push(ratio)
+        tab.bookmarks.push(pixelY)
         tab.bookmarks.sort((a, b) => a - b)
     }
 
@@ -58,11 +53,10 @@ function next() {
     if (!tab || !tab.bookmarks || tab.bookmarks.length === 0) return
 
     const area = document.getElementById("content-area")
-    if (!area || area.scrollHeight === 0) return
-    const current = typeof Cursor !== "undefined" ? Cursor.getRatio() : area.scrollTop / area.scrollHeight
+    if (!area) return
+    const current = typeof Cursor !== "undefined" ? Cursor.getPixel() : area.scrollTop
 
-    const epsilon = SNAP_PX / area.scrollHeight
-    let target = tab.bookmarks.find((b) => b > current + epsilon)
+    let target = tab.bookmarks.find((b) => b > current + SNAP_PX)
     if (target === undefined) {
         const wrap = typeof Settings !== "undefined" && Settings.getWrapNavigation()
         if (!wrap) return
@@ -77,13 +71,12 @@ function prev() {
     if (!tab || !tab.bookmarks || tab.bookmarks.length === 0) return
 
     const area = document.getElementById("content-area")
-    if (!area || area.scrollHeight === 0) return
-    const current = typeof Cursor !== "undefined" ? Cursor.getRatio() : area.scrollTop / area.scrollHeight
+    if (!area) return
+    const current = typeof Cursor !== "undefined" ? Cursor.getPixel() : area.scrollTop
 
-    const epsilon = SNAP_PX / area.scrollHeight
     let target = null
     for (let i = tab.bookmarks.length - 1; i >= 0; i--) {
-        if (tab.bookmarks[i] < current - epsilon) {
+        if (tab.bookmarks[i] < current - SNAP_PX) {
             target = tab.bookmarks[i]
             break
         }
@@ -97,9 +90,7 @@ function prev() {
     scrollToBookmark(area, target)
 }
 
-function scrollToBookmark(area, ratio) {
-    const pixelY = ratio * area.scrollHeight
-    // Center the bookmark in the visible area
+function scrollToBookmark(area, pixelY) {
     area.scrollTo({ top: pixelY - area.clientHeight / 2, behavior: "smooth" })
     if (typeof Cursor !== "undefined") {
         Cursor.update(pixelY)
@@ -127,11 +118,10 @@ function updateMarkers() {
     const tab = Tabs.getActiveTab()
     if (!tab || !tab.bookmarks || tab.bookmarks.length === 0) return
 
-    const scrollHeight = area.scrollHeight
-    for (const ratio of tab.bookmarks) {
+    for (const px of tab.bookmarks) {
         const marker = document.createElement("div")
         marker.className = "bookmark-marker"
-        marker.style.top = ratio * scrollHeight + "px"
+        marker.style.top = px + "px"
         marginEl.appendChild(marker)
     }
 }
@@ -148,7 +138,7 @@ function refreshMarkers() {
         if (body) {
             const lastChild = body.lastElementChild
             if (lastChild) {
-                const contentBottom = (lastChild.offsetTop + lastChild.offsetHeight) / area.scrollHeight
+                const contentBottom = lastChild.offsetTop + lastChild.offsetHeight
                 tab.bookmarks = tab.bookmarks.filter((b) => b <= contentBottom)
                 saveBookmarks(tab.filePath, tab.bookmarks)
             }
