@@ -44,6 +44,7 @@ body {
     -webkit-app-region: no-drag;
     user-select: none;
     flex-shrink: 0;
+    border-radius: 6px 6px 0 0;
 }
 
 .tab-button:hover {
