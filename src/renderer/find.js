@@ -290,5 +290,12 @@ function clearHighlights() {
     }
 }
 
+function refreshSearch() {
+    clearHighlights()
+    if (findBarEl && !findBarEl.classList.contains("hidden") && findInput.value) {
+        performSearch()
+    }
+}
+
 // eslint-disable-next-line no-unused-vars
-const Find = { toggleFind, closeFindBar, clearHighlights }
+const Find = { toggleFind, closeFindBar, clearHighlights, refreshSearch }

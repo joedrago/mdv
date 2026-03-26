@@ -79,6 +79,7 @@ function switchTab(id) {
     }
 
     // Save current scroll from the actual scroll container
+    // (must happen after clearHighlights which may alter DOM)
     if (activeTabId !== null && !restoringSession) {
         const current = findTab(activeTabId)
         if (current) {
@@ -113,6 +114,11 @@ function switchTab(id) {
     const body = getMarkdownBody(id)
     if (body) {
         TOC.generateTOC(body)
+    }
+
+    // Re-run search on the new tab if find bar is open
+    if (typeof Find !== "undefined") {
+        Find.refreshSearch()
     }
 
     saveSession()
