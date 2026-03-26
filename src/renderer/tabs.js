@@ -121,6 +121,11 @@ function switchTab(id) {
         Find.refreshSearch()
     }
 
+    // Refresh bookmark markers for the new tab
+    if (typeof Bookmarks !== "undefined") {
+        Bookmarks.refreshMarkers()
+    }
+
     saveSession()
 }
 
@@ -130,9 +135,12 @@ function closeTab(id) {
 
     const tab = tabs[idx]
 
-    // Unwatch the file
+    // Unwatch the file and delete bookmarks
     if (tab.filePath) {
         window.mdv.unwatchFile(tab.filePath)
+        if (typeof Bookmarks !== "undefined") {
+            Bookmarks.deleteBookmarks(tab.filePath)
+        }
     }
 
     // Remove DOM elements

@@ -198,8 +198,8 @@ function performSearch() {
     }
 
     if (matches.length > 0) {
-        // Find the first match at or below the current scroll position
-        const scrollTop = document.getElementById("content-area").scrollTop
+        // Find the first match at or below the current line
+        const scrollTop = typeof Cursor !== "undefined" ? Cursor.getPixel() : document.getElementById("content-area").scrollTop
         currentIndex = 0
         for (let i = 0; i < matches.length; i++) {
             if (matches[i].offsetTop >= scrollTop) {
@@ -209,6 +209,9 @@ function performSearch() {
         }
         matches[currentIndex].classList.add("active")
         matches[currentIndex].scrollIntoView({ block: "center", behavior: "smooth" })
+        if (typeof Cursor !== "undefined") {
+            Cursor.update(matches[currentIndex].offsetTop)
+        }
     }
 
     updateMatchCount()
@@ -222,6 +225,9 @@ function navigateMatch(direction) {
     currentIndex = (currentIndex + direction + matches.length) % matches.length
     matches[currentIndex].classList.add("active")
     matches[currentIndex].scrollIntoView({ block: "center", behavior: "smooth" })
+    if (typeof Cursor !== "undefined") {
+        Cursor.update(matches[currentIndex].offsetTop)
+    }
     updateMatchCount()
 
     // Update active scroll marker

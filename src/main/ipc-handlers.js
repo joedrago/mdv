@@ -107,4 +107,10 @@ function sendToggleFind(win) {
     }
 }
 
-module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind }
+function sendBookmarkAction(win, action) {
+    if (win && !win.isDestroyed()) {
+        win.webContents.send("bookmark-action", action)
+    }
+}
+
+module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind, sendBookmarkAction }

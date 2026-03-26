@@ -47,6 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (area) {
             area.scrollTop = scrollTop
         }
+
+        // Refresh bookmark markers after re-render (active tab only)
+        if (activeTab && activeTab.id === tab.id) {
+            Bookmarks.refreshMarkers()
+        }
     })
 
     window.mdv.onSetTheme((theme) => {
@@ -71,17 +76,30 @@ document.addEventListener("DOMContentLoaded", () => {
         Find.toggleFind()
     })
 
+    window.mdv.onBookmarkAction((action) => {
+        if (action === "toggle") Bookmarks.toggle()
+        else if (action === "next") Bookmarks.next()
+        else if (action === "prev") Bookmarks.prev()
+        else if (action === "clear") Bookmarks.clearAll()
+    })
+
     // Empty state click opens file dialog
     document.getElementById("empty-state").addEventListener("click", async () => {
         const filePath = await window.mdv.openFileDialog()
         if (filePath) await openFile(filePath)
     })
 
-    // Save session on scroll (debounced)
+    // Track cursor position and save session on scroll
     let scrollSaveTimer = null
-    document.getElementById("content-area").addEventListener("scroll", () => {
+    const contentAreaEl = document.getElementById("content-area")
+    contentAreaEl.addEventListener("scroll", () => {
+        Cursor.clampToViewport()
         if (scrollSaveTimer) clearTimeout(scrollSaveTimer)
         scrollSaveTimer = setTimeout(() => Tabs.saveSession(), 200)
+    })
+
+    contentAreaEl.addEventListener("click", (e) => {
+        Cursor.setFromClick(e.clientY)
     })
 
     // Save session before app closes

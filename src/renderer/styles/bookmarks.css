@@ -1,0 +1,18 @@
+#bookmark-margin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 14px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.bookmark-marker {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    height: 6px;
+    background: #0969da;
+    border-radius: 1px;
+    pointer-events: none;
+}

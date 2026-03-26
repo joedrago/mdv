@@ -39,5 +39,8 @@ contextBridge.exposeInMainWorld("mdv", {
     },
     onToggleFind: (callback) => {
         ipcRenderer.on("toggle-find", () => callback())
+    },
+    onBookmarkAction: (callback) => {
+        ipcRenderer.on("bookmark-action", (_e, action) => callback(action))
     }
 })

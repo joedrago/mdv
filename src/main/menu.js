@@ -1,5 +1,5 @@
 const { Menu, app } = require("electron")
-const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind } = require("./ipc-handlers")
+const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind, sendBookmarkAction } = require("./ipc-handlers")
 const fileManager = require("./file-manager")
 
 const themes = [
@@ -125,6 +125,27 @@ function buildMenu(win) {
                     label: "Find...",
                     accelerator: "CmdOrCtrl+F",
                     click: () => sendToggleFind(win)
+                },
+                { type: "separator" },
+                {
+                    label: "Toggle Bookmark",
+                    accelerator: "CmdOrCtrl+F2",
+                    click: () => sendBookmarkAction(win, "toggle")
+                },
+                {
+                    label: "Next Bookmark",
+                    accelerator: "F2",
+                    click: () => sendBookmarkAction(win, "next")
+                },
+                {
+                    label: "Previous Bookmark",
+                    accelerator: "Shift+F2",
+                    click: () => sendBookmarkAction(win, "prev")
+                },
+                {
+                    label: "Clear All Bookmarks",
+                    accelerator: "CmdOrCtrl+Shift+F2",
+                    click: () => sendBookmarkAction(win, "clear")
                 }
             ]
         },
