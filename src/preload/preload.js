@@ -33,5 +33,8 @@ contextBridge.exposeInMainWorld("mdv", {
     },
     onCloseTab: (callback) => {
         ipcRenderer.on("close-tab", () => callback())
+    },
+    onMoveTab: (callback) => {
+        ipcRenderer.on("move-tab", (_e, direction) => callback(direction))
     }
 })

@@ -95,4 +95,10 @@ function sendSetTheme(win, theme) {
     }
 }
 
-module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme }
+function sendMoveTab(win, direction) {
+    if (win && !win.isDestroyed()) {
+        win.webContents.send("move-tab", direction)
+    }
+}
+
+module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab }

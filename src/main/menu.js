@@ -1,5 +1,5 @@
 const { Menu, app } = require("electron")
-const { sendOpenFile, sendToggleToc, sendSetTheme } = require("./ipc-handlers")
+const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab } = require("./ipc-handlers")
 const fileManager = require("./file-manager")
 
 const themes = [
@@ -100,6 +100,17 @@ function buildMenu(win) {
                             win.webContents.print()
                         }
                     }
+                },
+                { type: "separator" },
+                {
+                    label: "Move Tab Left",
+                    accelerator: "Ctrl+Shift+PageUp",
+                    click: () => sendMoveTab(win, -1)
+                },
+                {
+                    label: "Move Tab Right",
+                    accelerator: "Ctrl+Shift+PageDown",
+                    click: () => sendMoveTab(win, 1)
                 },
                 ...(!isMac ? [{ type: "separator" }, { role: "quit" }] : [])
             ]

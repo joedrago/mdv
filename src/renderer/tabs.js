@@ -22,6 +22,41 @@ function createTab(filePath, title) {
         e.stopPropagation()
         closeTab(id)
     })
+
+    // Drag-to-reorder
+    btn.draggable = true
+    btn.addEventListener("dragstart", (e) => {
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("text/plain", id.toString())
+        btn.classList.add("dragging")
+    })
+    btn.addEventListener("dragend", () => {
+        btn.classList.remove("dragging")
+        for (const b of tabBar().querySelectorAll(".tab-button")) {
+            b.classList.remove("drag-over-left", "drag-over-right")
+        }
+    })
+    btn.addEventListener("dragover", (e) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = "move"
+        const rect = btn.getBoundingClientRect()
+        const midX = rect.left + rect.width / 2
+        btn.classList.toggle("drag-over-left", e.clientX < midX)
+        btn.classList.toggle("drag-over-right", e.clientX >= midX)
+    })
+    btn.addEventListener("dragleave", () => {
+        btn.classList.remove("drag-over-left", "drag-over-right")
+    })
+    btn.addEventListener("drop", (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const draggedId = parseInt(e.dataTransfer.getData("text/plain"))
+        if (isNaN(draggedId) || draggedId === id) return
+        const rect = btn.getBoundingClientRect()
+        const insertBefore = e.clientX < rect.left + rect.width / 2
+        reorderTab(draggedId, id, insertBefore)
+    })
+
     tabBar().appendChild(btn)
 
     // Create content div
@@ -174,6 +209,53 @@ function getSession() {
     }
 }
 
+function reorderTab(draggedId, targetId, insertBefore) {
+    const dragIdx = tabs.findIndex((t) => t.id === draggedId)
+    const targetIdx = tabs.findIndex((t) => t.id === targetId)
+    if (dragIdx === -1 || targetIdx === -1) return
+
+    // Reorder array
+    const [dragged] = tabs.splice(dragIdx, 1)
+    const newTargetIdx = tabs.findIndex((t) => t.id === targetId)
+    const insertIdx = insertBefore ? newTargetIdx : newTargetIdx + 1
+    tabs.splice(insertIdx, 0, dragged)
+
+    // Reorder DOM
+    const bar = tabBar()
+    const draggedBtn = bar.querySelector(`[data-tab-id="${draggedId}"]`)
+    const targetBtn = bar.querySelector(`[data-tab-id="${targetId}"]`)
+    if (insertBefore) {
+        bar.insertBefore(draggedBtn, targetBtn)
+    } else {
+        bar.insertBefore(draggedBtn, targetBtn.nextSibling)
+    }
+
+    saveSession()
+}
+
+function moveTab(id, direction) {
+    const idx = tabs.findIndex((t) => t.id === id)
+    if (idx === -1) return
+    const newIdx = idx + direction
+    if (newIdx < 0 || newIdx >= tabs.length) return
+
+    // Swap in array
+    ;[tabs[idx], tabs[newIdx]] = [tabs[newIdx], tabs[idx]]
+
+    // Reorder DOM
+    const bar = tabBar()
+    const buttons = [...bar.querySelectorAll(".tab-button")]
+    const btn = buttons[idx]
+    const target = buttons[newIdx]
+    if (direction < 0) {
+        bar.insertBefore(btn, target)
+    } else {
+        bar.insertBefore(target, btn)
+    }
+
+    saveSession()
+}
+
 function escapeHtml(str) {
     const div = document.createElement("div")
     div.textContent = str
@@ -181,4 +263,4 @@ function escapeHtml(str) {
 }
 
 // eslint-disable-next-line no-unused-vars
-const Tabs = { createTab, switchTab, closeTab, getActiveTab, findTabByPath, getMarkdownBody, getTabContentDiv, saveSession, getSession, setRestoring }
+const Tabs = { createTab, switchTab, closeTab, getActiveTab, findTabByPath, getMarkdownBody, getTabContentDiv, saveSession, getSession, setRestoring, moveTab }

@@ -77,6 +77,18 @@ body {
     color: #24292f;
 }
 
+.tab-button.dragging {
+    opacity: 0.4;
+}
+
+.tab-button.drag-over-left {
+    box-shadow: inset 3px 0 0 #0969da;
+}
+
+.tab-button.drag-over-right {
+    box-shadow: inset -3px 0 0 #0969da;
+}
+
 /* Main Layout */
 #main-container {
     display: flex;
