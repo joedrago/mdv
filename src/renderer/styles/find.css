@@ -143,30 +143,24 @@ mark.search-highlight.active {
     outline: 2px solid #d68a1e;
 }
 
-/* Scrollbar match markers */
-#find-scroll-markers {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
+/* Scrollbar match markers — painted directly on the scrollbar track */
+#content-area::-webkit-scrollbar {
     width: 14px;
-    z-index: 50;
-    pointer-events: none;
 }
 
-#find-scroll-markers.hidden {
-    display: none;
+#content-area::-webkit-scrollbar-track {
+    background: var(--find-scrollbar-gradient, transparent);
 }
 
-.find-scroll-marker {
-    position: absolute;
-    left: 2px;
-    right: 2px;
-    height: 3px;
-    background: #e8a517;
-    border-radius: 1px;
+#content-area::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
 }
 
-.find-scroll-marker.active {
-    background: #d45500;
+#content-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px solid transparent;
+    background-clip: padding-box;
 }
