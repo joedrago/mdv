@@ -112,7 +112,8 @@ function updateMarkers() {
     const area = document.getElementById("content-area")
     if (!area) return
 
-    // Size the margin to match the full scrollable height
+    // Collapse margin before measuring so it doesn't inflate scrollHeight
+    marginEl.style.height = "0"
     marginEl.style.height = area.scrollHeight + "px"
 
     const tab = Tabs.getActiveTab()
