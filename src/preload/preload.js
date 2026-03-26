@@ -42,5 +42,11 @@ contextBridge.exposeInMainWorld("mdv", {
     },
     onBookmarkAction: (callback) => {
         ipcRenderer.on("bookmark-action", (_e, action) => callback(action))
+    },
+    onToggleWrapNavigation: (callback) => {
+        ipcRenderer.on("toggle-wrap-navigation", () => callback())
+    },
+    sendWrapNavigationState: (value) => {
+        ipcRenderer.send("wrap-navigation-state", value)
     }
 })

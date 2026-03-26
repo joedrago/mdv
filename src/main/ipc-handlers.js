@@ -14,6 +14,12 @@ function registerIpcHandlers() {
     if (registered) return
     registered = true
 
+    ipcMain.on("wrap-navigation-state", (_event, value) => {
+        const { setWrapNavigation } = require("./menu")
+        const win = getWin()
+        if (win) setWrapNavigation(value, win)
+    })
+
     ipcMain.handle("open-file-dialog", async () => {
         const win = getWin()
         if (!win) return null
@@ -113,4 +119,10 @@ function sendBookmarkAction(win, action) {
     }
 }
 
-module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind, sendBookmarkAction }
+function sendToggleWrapNavigation(win) {
+    if (win && !win.isDestroyed()) {
+        win.webContents.send("toggle-wrap-navigation")
+    }
+}
+
+module.exports = { registerIpcHandlers, sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind, sendBookmarkAction, sendToggleWrapNavigation }

@@ -221,8 +221,12 @@ function performSearch() {
 function navigateMatch(direction) {
     if (matches.length === 0) return
 
+    const newIndex = currentIndex + direction
+    const wrap = typeof Settings !== "undefined" && Settings.getWrapNavigation()
+    if (!wrap && (newIndex < 0 || newIndex >= matches.length)) return
+
     matches[currentIndex].classList.remove("active")
-    currentIndex = (currentIndex + direction + matches.length) % matches.length
+    currentIndex = (newIndex + matches.length) % matches.length
     matches[currentIndex].classList.add("active")
     matches[currentIndex].scrollIntoView({ block: "center", behavior: "smooth" })
     if (typeof Cursor !== "undefined") {

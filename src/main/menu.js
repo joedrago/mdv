@@ -1,5 +1,5 @@
 const { Menu, app } = require("electron")
-const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind, sendBookmarkAction } = require("./ipc-handlers")
+const { sendOpenFile, sendToggleToc, sendSetTheme, sendMoveTab, sendToggleFind, sendBookmarkAction, sendToggleWrapNavigation } = require("./ipc-handlers")
 const fileManager = require("./file-manager")
 
 const themes = [
@@ -12,6 +12,13 @@ const themes = [
     { label: "Nord", id: "nord" },
     { label: "Gruvbox", id: "gruvbox" }
 ]
+
+let wrapNavigation = false
+
+function setWrapNavigation(value, win) {
+    wrapNavigation = value
+    buildMenu(win)
+}
 
 function buildMenu(win) {
     const isMac = process.platform === "darwin"
@@ -146,6 +153,13 @@ function buildMenu(win) {
                     label: "Clear All Bookmarks",
                     accelerator: "CmdOrCtrl+Shift+F2",
                     click: () => sendBookmarkAction(win, "clear")
+                },
+                { type: "separator" },
+                {
+                    label: "Wrap Around Navigation",
+                    type: "checkbox",
+                    checked: wrapNavigation,
+                    click: () => sendToggleWrapNavigation(win)
                 }
             ]
         },
@@ -169,10 +183,6 @@ function buildMenu(win) {
                 { type: "separator" },
                 { role: "toggleDevTools" }
             ]
-        },
-        {
-            label: "Window",
-            submenu: [{ role: "minimize" }, ...(isMac ? [{ role: "zoom" }, { type: "separator" }, { role: "front" }] : [])]
         }
     ]
 
@@ -180,4 +190,4 @@ function buildMenu(win) {
     Menu.setApplicationMenu(menu)
 }
 
-module.exports = { buildMenu, themes }
+module.exports = { buildMenu, themes, setWrapNavigation }

@@ -83,6 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
         else if (action === "clear") Bookmarks.clearAll()
     })
 
+    window.mdv.onToggleWrapNavigation(() => {
+        const newValue = Settings.toggleWrapNavigation()
+        window.mdv.sendWrapNavigationState(newValue)
+    })
+
+    // Sync initial wrap navigation state to main process for menu checkbox
+    window.mdv.sendWrapNavigationState(Settings.getWrapNavigation())
+
     // Empty state click opens file dialog
     document.getElementById("empty-state").addEventListener("click", async () => {
         const filePath = await window.mdv.openFileDialog()

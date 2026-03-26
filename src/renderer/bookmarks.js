@@ -63,7 +63,11 @@ function next() {
 
     const epsilon = SNAP_PX / area.scrollHeight
     let target = tab.bookmarks.find((b) => b > current + epsilon)
-    if (target === undefined) target = tab.bookmarks[0]
+    if (target === undefined) {
+        const wrap = typeof Settings !== "undefined" && Settings.getWrapNavigation()
+        if (!wrap) return
+        target = tab.bookmarks[0]
+    }
 
     scrollToBookmark(area, target)
 }
@@ -84,7 +88,11 @@ function prev() {
             break
         }
     }
-    if (target === null) target = tab.bookmarks[tab.bookmarks.length - 1]
+    if (target === null) {
+        const wrap = typeof Settings !== "undefined" && Settings.getWrapNavigation()
+        if (!wrap) return
+        target = tab.bookmarks[tab.bookmarks.length - 1]
+    }
 
     scrollToBookmark(area, target)
 }
