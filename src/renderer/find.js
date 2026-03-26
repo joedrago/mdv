@@ -212,6 +212,7 @@ function performSearch() {
     }
 
     updateMatchCount()
+    updateScrollMarkers()
 }
 
 function navigateMatch(direction) {
@@ -222,6 +223,12 @@ function navigateMatch(direction) {
     matches[currentIndex].classList.add("active")
     matches[currentIndex].scrollIntoView({ block: "center", behavior: "smooth" })
     updateMatchCount()
+
+    // Update active scroll marker
+    const markers = document.querySelectorAll(".find-scroll-marker")
+    for (let i = 0; i < markers.length; i++) {
+        markers[i].classList.toggle("active", i === currentIndex)
+    }
 }
 
 function updateMatchCount() {
@@ -229,6 +236,37 @@ function updateMatchCount() {
         matchCountEl.textContent = findInput.value ? "0 results" : ""
     } else {
         matchCountEl.textContent = `${currentIndex + 1} of ${matches.length}`
+    }
+}
+
+function updateScrollMarkers() {
+    let track = document.getElementById("find-scroll-markers")
+    if (!track) {
+        track = document.createElement("div")
+        track.id = "find-scroll-markers"
+        document.getElementById("main-container").appendChild(track)
+    }
+
+    track.innerHTML = ""
+
+    if (matches.length === 0) {
+        track.classList.add("hidden")
+        return
+    }
+
+    track.classList.remove("hidden")
+
+    const area = document.getElementById("content-area")
+    const scrollHeight = area.scrollHeight
+    const trackHeight = track.clientHeight
+
+    for (let i = 0; i < matches.length; i++) {
+        const marker = document.createElement("div")
+        marker.className = "find-scroll-marker"
+        if (i === currentIndex) marker.classList.add("active")
+        const ratio = matches[i].offsetTop / scrollHeight
+        marker.style.top = (ratio * trackHeight) + "px"
+        track.appendChild(marker)
     }
 }
 
@@ -244,6 +282,12 @@ function clearHighlights() {
     }
     matches = []
     currentIndex = -1
+
+    const track = document.getElementById("find-scroll-markers")
+    if (track) {
+        track.innerHTML = ""
+        track.classList.add("hidden")
+    }
 }
 
 // eslint-disable-next-line no-unused-vars
